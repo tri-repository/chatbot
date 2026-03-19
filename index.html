@@ -23,49 +23,6 @@
             overflow: hidden;
         }
 
-        /* Pantalla de Login */
-        #login-screen {
-            position: fixed;
-            top: 0; left: 0; width: 100%; height: 100%;
-            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-            color: white;
-            transition: opacity 0.5s ease;
-        }
-
-        .login-box {
-            background: white;
-            padding: 30px;
-            border-radius: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            width: 300px;
-        }
-
-        .login-box input {
-            padding: 12px;
-            border: 1px solid #ddd;
-            border-radius: 8px;
-            outline: none;
-        }
-
-        .login-box button {
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        /* Interfaz del Chat */
         header {
             background: white;
             color: var(--primary-dark);
@@ -110,70 +67,45 @@
 
         button#send-btn { background: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
         
-        .typing { font-size: 0.8rem; color: #666; padding: 5px 20px; display: none; }
+        .typing { font-size: 0.8rem; color: #666; padding: 5px 20px; display: none; text-align: center; }
     </style>
 </head>
 <body>
 
-<div id="login-screen">
-    <h2 style="margin-bottom: 10px;">Thinking Cities | Rural</h2>
-    <p style="margin-bottom: 20px; opacity: 0.9;">Acceso exclusivo SATEC TRI</p>
-    <div class="login-box">
-        <input type="password" id="pass-code" placeholder="Contraseña del proyecto" onkeypress="if(event.key==='Enter') checkAccess()">
-        <button onclick="checkAccess()">DESBLOQUEAR ASISTENTE</button>
-        <p id="error-pass" style="color: red; font-size: 0.8rem; text-align: center; display: none; margin: 0;">Código incorrecto</p>
-    </div>
-</div>
-
 <header>
     <h2 style="margin:0;">Thinking Cities | <span style="color: var(--primary);">Rural</span></h2>
-    <small>Gestión Inteligente de Territorios (Gemini 2.5 Flash)</small>
+    <small>Plataforma de Gestión Inteligente - Acceso Protegido</small>
 </header>
 
 <div id="chat-window"></div>
-<div id="status" class="typing">El asistente está procesando los datos...</div>
+<div id="status" class="typing">Procesando consulta técnica...</div>
 
 <div class="input-area">
     <div class="input-box">
-        <input type="text" id="query" placeholder="Consulta sobre sensores, alumbrado o residuos..." autocomplete="off">
+        <input type="text" id="query" placeholder="Escribe tu consulta aquí..." autocomplete="off">
         <button id="send-btn">Enviar</button>
     </div>
 </div>
 
 <script>
-    // CONFIGURACIÓN DE CONEXIÓN
+    // URL FIJA DE TU TÚNEL NGROK
     const N8N_URL = 'https://unsparse-shapely-mickie.ngrok-free.dev/webhook/f580034d-7d05-4cd6-92c6-9fa26dafdeb9/chat';
-    // Credenciales de Ngrok (deben coincidir con tu comando --basic-auth)
-    const AUTH_HEADER = 'Basic ' + btoa('admin:SatecTRI'); 
     
     const sessionId = "session_" + Math.random().toString(36).substr(2, 9);
-
-    // FUNCIÓN DE LOGIN
-    function checkAccess() {
-        const input = document.getElementById('pass-code').value;
-        const ACCESS_KEY = "Satec2026"; // Cambia esta contraseña si quieres otra
-
-        if(input === ACCESS_KEY) {
-            document.getElementById('login-screen').style.opacity = '0';
-            setTimeout(() => {
-                document.getElementById('login-screen').style.display = 'none';
-            }, 500);
-            appendMsg("Conexión segura establecida. Soy tu asistente técnico rural. ¿En qué puedo ayudarte hoy?", "agent");
-        } else {
-            document.getElementById('error-pass').style.display = 'block';
-        }
-    }
-
-    // LÓGICA DEL CHAT
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('query');
     const sendBtn = document.getElementById('send-btn');
     const statusLabel = document.getElementById('status');
 
+    // Mensaje de bienvenida inicial
+    window.onload = () => {
+        appendMsg("Bienvenido al asistente de Smart Rural. La conexión es segura. ¿En qué puedo ayudarte?", "agent");
+    };
+
     function appendMsg(text, type) {
         const div = document.createElement('div');
         div.className = `msg ${type}`;
-        div.innerHTML = `<span class="author">${type === 'user' ? 'Tú' : 'Asistente Técnico'}</span>${text}`;
+        div.innerHTML = `<span class="author">${type === 'user' ? 'Usuario' : 'SATEC Rural'}</span>${text}`;
         chatWindow.appendChild(div);
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
@@ -192,8 +124,9 @@
             const response = await fetch(N8N_URL, {
                 method: 'POST',
                 headers: { 
-                    'Content-Type': 'application/json',
-                    'Authorization': AUTH_HEADER
+                    'Content-Type': 'application/json'
+                    // IMPORTANTE: No enviamos Authorization aquí. 
+                    // El navegador detectará el 401 de Ngrok y pedirá el login automáticamente.
                 },
                 body: JSON.stringify({ 
                     action: "sendMessage",
@@ -202,16 +135,19 @@
                 })
             });
 
-            if (!response.ok) throw new Error('Error en la pasarela de datos');
+            if (response.status === 401) {
+                appendMsg("Error de autenticación. Por favor, introduce las credenciales de acceso cuando el navegador las solicite.", "agent");
+                return;
+            }
 
             const data = await response.json();
             let reply = Array.isArray(data) ? data[0].output : (data.output || data.text);
             
-            appendMsg(reply || "No he recibido datos del sensor.", 'agent');
+            appendMsg(reply || "No hay respuesta del servidor.", 'agent');
 
         } catch (err) {
             console.error(err);
-            appendMsg("Error de conexión con el nodo central. Revisa el estado del túnel Ngrok.", 'agent');
+            appendMsg("Error crítico de conexión. Asegúrate de que el túnel Ngrok esté activo.", 'agent');
         } finally {
             inputField.disabled = false;
             sendBtn.disabled = false;
