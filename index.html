@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>TRI | Territorio Rural Inteligente - JCYL</title>
+    
+    <link rel="icon" type="image/png" href="LOGOTRISIN.PNG">
+
     <style>
         :root {
             --primary: #2e7d32;
@@ -26,7 +29,7 @@
         #lock-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
-            display: none; /* Oculto por defecto para evitar parpadeo */
+            display: none; 
             justify-content: center; align-items: center;
             z-index: 1000; transition: all 0.5s ease;
         }
@@ -69,7 +72,7 @@
 
         /* --- INTERFAZ DEL CHAT --- */
         #main-container {
-            display: none; /* Oculto por defecto */
+            display: none; 
             flex-direction: column; height: 100vh;
             filter: blur(10px);
             transition: 0.5s;
@@ -79,13 +82,21 @@
             background: white; color: var(--primary-dark);
             padding: 0.2rem; border-bottom: 2px solid var(--primary);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
-            display: flex; align-items: center; justify-content: center;
+            display: flex; align-items: center; position: relative;
         }
 
-        header img { height: 100px; width: auto; margin-right: 15px; margin-bottom: -15px; }
+        header img { height: 60px; width: auto; margin-right: 15px; margin-left: auto; margin-bottom: -15px; }
 
+        .header-titles { margin-right: auto; text-align: left; }
         .header-titles h2 { margin: 0; font-size: 1.2rem; }
         .header-titles small { color: #666; font-size: 0.8rem; }
+
+        /* Botón salir */
+        .logout-btn {
+            position: absolute; right: 15px; bottom: 5px;
+            background: none; border: none; color: #999;
+            font-size: 0.7rem; cursor: pointer; text-decoration: underline;
+        }
 
         #chat-window {
             flex: 1; overflow-y: auto; padding: 20px;
@@ -121,7 +132,7 @@
         <p>Asistente de Territorio Rural Inteligente</p>
         <div class="form-group">
             <label>Usuario</label>
-            <input type="text" id="user-input" class="login-input">
+            <input type="text" id="user-input" class="login-input" autocomplete="off">
         </div>
         <div class="form-group">
             <label>Contraseña</label>
@@ -137,8 +148,9 @@
         <img src="LOGOTRISIN.PNG" alt="Logo">
         <div class="header-titles">
             <h2>TRI | <span style="color: var(--primary);">Territorio Rural Inteligente</span></h2>
-            <small>Asistente Virtual - JCYL</small>
+            <small>Asistente Virtual - Junta de Castilla y León</small>
         </div>
+        <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
     </header>
     <div id="chat-window"></div>
     <div id="status" class="typing">Estoy pensando...</div>
@@ -151,7 +163,6 @@
 </div>
 
 <script>
-    // Configuración Global
     const N8N_URL = 'https://unsparse-shapely-mickie.ngrok-free.dev/webhook/f580034d-7d05-4cd6-92c6-9fa26dafdeb9/chat';
     const sessionId = "session_" + Math.random().toString(36).substr(2, 9);
     let userAuthToken = null;
@@ -195,14 +206,18 @@
         }
     }
 
-    // Comprobación de sesión inmediata al cargar el script
+    function logout() {
+        localStorage.removeItem('tri_session_token');
+        location.reload();
+    }
+
     (function checkSession() {
         const savedToken = localStorage.getItem('tri_session_token');
         if (savedToken) {
             userAuthToken = savedToken;
-            showChatInterface(true); // Se muestra instantáneamente
+            showChatInterface(true);
         } else {
-            lockScreen.style.display = 'flex'; // Solo se muestra el login si no hay token
+            lockScreen.style.display = 'flex';
         }
     })();
 
