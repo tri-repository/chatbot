@@ -130,31 +130,31 @@
         <p>Acceso al Asistente de TRI</p>
         
         <div class="form-group">
-            <label>Usuario n8n</label>
+            <label>Usuario</label>
             <input type="text" id="user-input" class="login-input" autocomplete="username">
         </div>
         
         <div class="form-group">
-            <label>Contraseña n8n</label>
+            <label>Contraseña</label>
             <input type="password" id="pass-input" class="login-input" autocomplete="current-password" onkeypress="if(event.key==='Enter') login()">
         </div>
 
         <button id="login-btn" onclick="login()">ENTRAR</button>
-        <div id="login-error">Credenciales requeridas o n8n inaccesible.</div>
+        <div id="login-error">Credenciales necesarias para acceso.</div>
     </div>
 </div>
 
 <div id="main-container">
     <header>
-        <img src="image_3.png" alt="Logo TRI JCYL">
+        <img src="LOGOTRISIN.PNG" alt="Logo TRI JCYL">
         <div class="header-titles">
             <h2 style="margin:0;">TRI | <span style="color: var(--primary);">Territorio Rural Inteligente</span></h2>
-            <small>Asistente Virtual - JCYL SATEC</small>
+            <small>Asistente Virtual - TRI JCYL</small>
         </div>
     </header>
 
     <div id="chat-window"></div>
-    <div id="status" class="typing">Conectando con el nodo central...</div>
+    <div id="status" class="typing">Estoy pensando...</div>
 
     <div class="input-area">
         <div class="input-box">
@@ -234,7 +234,7 @@
 
             // Si n8n rechaza la clave (Basic Auth incorrecto)
             if (response.status === 401) {
-                appendMsg("Error crítico: Credenciales de n8n incorrectas. Recarga la página.", 'agent');
+                appendMsg("Error crítico: Credenciales incorrectas. Recarga la página.", 'agent');
                 userAuthToken = null; // Reset clave
                 return;
             }
@@ -243,7 +243,7 @@
             // n8n puede devolver un array o un objeto directo
             let reply = Array.isArray(data) ? data[0].output : (data.output || data.text);
             
-            appendMsg(reply || "Lo siento, el nodo central no devolvió texto.", 'agent');
+            appendMsg(reply || "Lo siento, no he podido generar una respuesta.", 'agent');
 
         } catch (err) {
             console.error(err);
