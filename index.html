@@ -34,12 +34,17 @@
 
         .login-card {
             background: var(--white);
-            padding: 35px; border-radius: 15px;
+            padding: 25px 35px 35px; border-radius: 15px;
             box-shadow: 0 15px 35px rgba(0,0,0,0.2);
-            width: 100%; max-width: 350px; text-align: center;
+            width: 100%; max-width: 380px; text-align: center;
         }
 
-        .login-card h2 { color: var(--primary-dark); margin-bottom: 10px; }
+        /* Imagen en el Login */
+        .login-logo {
+            width: 120px; height: auto; margin-bottom: 20px;
+        }
+
+        .login-card h2 { color: var(--primary-dark); margin: 0 0 5px 0; }
         .login-card p { color: #666; font-size: 0.9rem; margin-bottom: 25px; }
 
         .form-group { text-align: left; margin-bottom: 15px; }
@@ -54,6 +59,7 @@
             width: 100%; background: var(--primary); color: white;
             border: none; padding: 14px; border-radius: 8px;
             font-size: 1rem; font-weight: bold; cursor: pointer; transition: 0.3s;
+            margin-top: 10px;
         }
         #login-btn:hover { background: var(--primary-dark); }
 
@@ -70,10 +76,22 @@
 
         header {
             background: white; color: var(--primary-dark);
-            padding: 1rem; text-align: center;
-            border-bottom: 2px solid var(--primary);
+            padding: 0.8rem; border-bottom: 2px solid var(--primary);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+            display: flex; align-items: center; justify-content: center;
         }
+
+        /* Imagen en la cabecera */
+        header img {
+            height: 40px; width: auto; margin-right: 15px;
+        }
+
+        header .header-titles {
+            display: flex; flex-direction: column; text-align: left;
+        }
+
+        header h2 { margin: 0; font-size: 1.3rem; }
+        header small { color: #666; font-size: 0.85rem; }
 
         #chat-window {
             flex: 1; overflow-y: auto; padding: 20px;
@@ -106,28 +124,33 @@
 
 <div id="lock-screen">
     <div class="login-card">
+        <img src="image_3.png" alt="Logo TRI JCYL" class="login-logo">
+        
         <h2>Thinking Cities</h2>
         <p>Acceso al Asistente de Gestión TRI</p>
         
         <div class="form-group">
-            <label>Usuario</label>
-            <input type="text" id="user-input" class="login-input" placeholder="admin">
+            <label>Usuario n8n</label>
+            <input type="text" id="user-input" class="login-input" autocomplete="username">
         </div>
         
         <div class="form-group">
-            <label>Contraseña</label>
-            <input type="password" id="pass-input" class="login-input" placeholder="••••••••" onkeypress="if(event.key==='Enter') login()">
+            <label>Contraseña n8n</label>
+            <input type="password" id="pass-input" class="login-input" autocomplete="current-password" onkeypress="if(event.key==='Enter') login()">
         </div>
 
         <button id="login-btn" onclick="login()">ENTRAR</button>
-        <div id="login-error">Credenciales requeridas para conectar.</div>
+        <div id="login-error">Credenciales requeridas o n8n inaccesible.</div>
     </div>
 </div>
 
 <div id="main-container">
     <header>
-        <h2 style="margin:0;">TRI | <span style="color: var(--primary);">Territorio Rural Inteligente</span></h2>
-        <small>Asistente Virtual - SATEC Thinking Cities</small>
+        <img src="image_3.png" alt="Logo TRI JCYL">
+        <div class="header-titles">
+            <h2 style="margin:0;">TRI | <span style="color: var(--primary);">Territorio Rural Inteligente</span></h2>
+            <small>Asistente Virtual - JCYL SATEC</small>
+        </div>
     </header>
 
     <div id="chat-window"></div>
@@ -155,16 +178,19 @@
 
     // Función de Login Visual
     function login() {
-        const u = document.getElementById('user-input').value;
-        const p = document.getElementById('pass-input').value;
+        const u = document.getElementById('user-input').value.trim();
+        const p = document.getElementById('pass-input').value.trim();
 
         if (u && p) {
             userAuthToken = btoa(u + ":" + p);
+            
+            // Ocultar pantalla de bloqueo con animación
             lockScreen.style.opacity = '0';
             setTimeout(() => {
                 lockScreen.style.display = 'none';
                 mainContainer.style.filter = 'none';
-                appendMsg("Bienvenido, conexión establecida. ¿En qué puedo ayudarte hoy?", "agent");
+                appendMsg(`Identificado como <strong>${u}</strong>. Conexión segura establecida. ¿En qué puedo ayudarte?`, "agent");
+                inputField.focus();
             }, 500);
         } else {
             document.getElementById('login-error').style.display = 'block';
@@ -174,6 +200,8 @@
     function appendMsg(text, type) {
         const div = document.createElement('div');
         div.className = `msg ${type}`;
+        // n8n responde en JSON, pero Gemini responde en Markdown.
+        // n8n no lo renderiza por defecto, así que usamos innerHTML.
         div.innerHTML = `<span class="author">${type === 'user' ? 'Tú' : 'Asistente TRI'}</span>${text}`;
         chatWindow.appendChild(div);
         chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -194,6 +222,7 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
+                    // Enviamos la "llave" guardada tras el login visual
                     'Authorization': 'Basic ' + userAuthToken
                 },
                 body: JSON.stringify({ 
@@ -203,17 +232,22 @@
                 })
             });
 
+            // Si n8n rechaza la clave (Basic Auth incorrecto)
             if (response.status === 401) {
-                appendMsg("Error 401: Credenciales de n8n incorrectas. Recarga la página.", 'agent');
+                appendMsg("Error crítico: Credenciales de n8n incorrectas. Recarga la página.", 'agent');
+                userAuthToken = null; // Reset clave
                 return;
             }
 
             const data = await response.json();
+            // n8n puede devolver un array o un objeto directo
             let reply = Array.isArray(data) ? data[0].output : (data.output || data.text);
-            appendMsg(reply || "Sin respuesta del servidor.", 'agent');
+            
+            appendMsg(reply || "Lo siento, el nodo central no devolvió texto.", 'agent');
 
         } catch (err) {
-            appendMsg("Error de conexión. Verifica que el túnel esté ONLINE.", 'agent');
+            console.error(err);
+            appendMsg("Error crítico de conexión. Verifica que el túnel esté ONLINE en la VM.", 'agent');
         } finally {
             inputField.disabled = false;
             sendBtn.disabled = false;
