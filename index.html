@@ -139,37 +139,43 @@
             font-size: 0.7rem; cursor: pointer;
         }
 
-        /* Contenedor que lleva la imagen de fondo difuminada */
-        #chat-bg {
-            flex: 1;
-            position: relative;
-            overflow-y: auto;   /* scroll aquí → barra pegada al borde derecho */
-            overflow-x: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: flex-start;
-        }
-
-        #chat-bg::before {
-            content: '';
-            position: absolute;
-            inset: 0;
+        /* Imagen de fondo FIJA detrás del área de chat */
+        #chat-bg-fixed {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
             background-image: url('fondopaisajeTRI.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            filter: blur(4px) brightness(0.92);
-            transform: scale(1.05); /* evita bordes blancos por el blur */
+            filter: blur(5px) brightness(0.90);
+            transform: scale(1.06);
             z-index: 0;
+            pointer-events: none;
         }
 
-        /* Overlay muy suave para que los mensajes sean legibles */
-        #chat-bg::after {
+        #chat-bg-fixed::after {
             content: '';
             position: absolute;
             inset: 0;
-            background: rgba(244, 247, 244, 0.55);
+            background: rgba(244, 247, 244, 0.52);
+        }
+
+        /* Contenedor scroll SIN barra visible */
+        #chat-bg {
+            flex: 1;
+            position: relative;
+            overflow-y: auto;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
             z-index: 1;
+            scrollbar-width: none;        /* Firefox */
+            -ms-overflow-style: none;     /* IE / Edge */
+        }
+
+        #chat-bg::-webkit-scrollbar {
+            display: none;                /* Chrome / Safari */
         }
 
         #chat-window {
@@ -222,6 +228,7 @@
 </div>
 
 <div id="main-container">
+    <div id="chat-bg-fixed"></div>
     <header>
         <img src="LOGOTRISIN.PNG" alt="Logo">
         <div class="header-titles">
