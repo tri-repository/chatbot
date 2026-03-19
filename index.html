@@ -3,31 +3,76 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thinking Cities | Rural</title>
+    <title>Thinking Cities | Rural - SATEC</title>
     <style>
         :root {
             --primary: #2e7d32;
             --primary-dark: #1b5e20;
-            --bg: #f9fbf9;
+            --bg: #f4f7f4;
             --user-bubble: #e8f5e9;
-            --agent-bubble: #f5f5f5;
+            --agent-bubble: #ffffff;
         }
 
         body {
-            font-family: 'Segoe UI', Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             background-color: var(--bg);
             margin: 0;
             display: flex;
             flex-direction: column;
             height: 100vh;
+            overflow: hidden;
         }
 
-        header {
+        /* Pantalla de Login */
+        #login-screen {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
             color: white;
-            padding: 1.2rem;
+            transition: opacity 0.5s ease;
+        }
+
+        .login-box {
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            width: 300px;
+        }
+
+        .login-box input {
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            outline: none;
+        }
+
+        .login-box button {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        /* Interfaz del Chat */
+        header {
+            background: white;
+            color: var(--primary-dark);
+            padding: 1rem;
             text-align: center;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            border-bottom: 2px solid var(--primary);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
         #chat-window {
@@ -37,76 +82,101 @@
             display: flex;
             flex-direction: column;
             gap: 15px;
-            max-width: 800px;
+            max-width: 900px;
             margin: 0 auto;
             width: 100%;
-            box-sizing: border-box;
         }
 
         .msg {
-            max-width: 85%;
-            padding: 12px 16px;
+            max-width: 80%;
+            padding: 12px 18px;
             border-radius: 15px;
             font-size: 0.95rem;
-            line-height: 1.5;
-            white-space: pre-wrap;
+            line-height: 1.4;
+            position: relative;
+            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
         }
 
-        .user { align-self: flex-end; background-color: var(--user-bubble); border: 1px solid #c8e6c9; }
-        .agent { align-self: flex-start; background-color: var(--agent-bubble); border: 1px solid #e0e0e0; }
+        .user { align-self: flex-end; background-color: var(--user-bubble); color: #1b5e20; border-bottom-right-radius: 2px; }
+        .agent { align-self: flex-start; background-color: var(--agent-bubble); color: #333; border-bottom-left-radius: 2px; border: 1px solid #eee; }
 
-        .author { display: block; font-size: 0.7rem; font-weight: bold; margin-bottom: 4px; color: #666; }
+        .author { font-weight: bold; font-size: 0.75rem; display: block; margin-bottom: 5px; text-transform: uppercase; color: #888; }
 
-        .input-container { background: white; padding: 15px; border-top: 1px solid #eee; display: flex; justify-content: center; }
-        .input-box { max-width: 800px; width: 100%; display: flex; gap: 10px; }
+        .input-area { background: white; padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: center; }
+        .input-box { max-width: 900px; width: 100%; display: flex; gap: 10px; }
 
-        input { flex: 1; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 25px; outline: none; }
-        input:focus { border-color: var(--primary); }
+        input#query { flex: 1; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 30px; outline: none; transition: 0.3s; }
+        input#query:focus { border-color: var(--primary); }
 
-        button { background-color: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 25px; cursor: pointer; font-weight: bold; }
-        button:hover { background-color: var(--primary-dark); }
-
-        .typing { font-size: 0.8rem; color: #888; text-align: center; display: none; padding: 5px; }
+        button#send-btn { background: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
+        
+        .typing { font-size: 0.8rem; color: #666; padding: 5px 20px; display: none; }
     </style>
 </head>
 <body>
 
+<div id="login-screen">
+    <h2 style="margin-bottom: 10px;">Thinking Cities | Rural</h2>
+    <p style="margin-bottom: 20px; opacity: 0.9;">Acceso exclusivo SATEC TRI</p>
+    <div class="login-box">
+        <input type="password" id="pass-code" placeholder="Contraseña del proyecto" onkeypress="if(event.key==='Enter') checkAccess()">
+        <button onclick="checkAccess()">DESBLOQUEAR ASISTENTE</button>
+        <p id="error-pass" style="color: red; font-size: 0.8rem; text-align: center; display: none; margin: 0;">Código incorrecto</p>
+    </div>
+</div>
+
 <header>
-    <h1>Thinking Cities | Rural</h1>
-    <p>Asistente de Gestión de Territorio Inteligente</p>
+    <h2 style="margin:0;">Thinking Cities | <span style="color: var(--primary);">Rural</span></h2>
+    <small>Gestión Inteligente de Territorios (Gemini 2.5 Flash)</small>
 </header>
 
 <div id="chat-window"></div>
-<div class="typing" id="status">Gemini está pensando...</div>
+<div id="status" class="typing">El asistente está procesando los datos...</div>
 
-<div class="input-container">
+<div class="input-area">
     <div class="input-box">
-        <input type="text" id="query" placeholder="Escribe tu mensaje..." autocomplete="off">
-        <button id="btn">Enviar</button>
+        <input type="text" id="query" placeholder="Consulta sobre sensores, alumbrado o residuos..." autocomplete="off">
+        <button id="send-btn">Enviar</button>
     </div>
 </div>
 
 <script>
+    // CONFIGURACIÓN DE CONEXIÓN
     const N8N_URL = 'https://unsparse-shapely-mickie.ngrok-free.dev/webhook/f580034d-7d05-4cd6-92c6-9fa26dafdeb9/chat';
+    // Credenciales de Ngrok (deben coincidir con tu comando --basic-auth)
+    const AUTH_HEADER = 'Basic ' + btoa('admin:SatecTRI'); 
     
-    // Generamos un ID de sesión para que n8n no de error 500
     const sessionId = "session_" + Math.random().toString(36).substr(2, 9);
 
+    // FUNCIÓN DE LOGIN
+    function checkAccess() {
+        const input = document.getElementById('pass-code').value;
+        const ACCESS_KEY = "Satec2026"; // Cambia esta contraseña si quieres otra
+
+        if(input === ACCESS_KEY) {
+            document.getElementById('login-screen').style.opacity = '0';
+            setTimeout(() => {
+                document.getElementById('login-screen').style.display = 'none';
+            }, 500);
+            appendMsg("Conexión segura establecida. Soy tu asistente técnico rural. ¿En qué puedo ayudarte hoy?", "agent");
+        } else {
+            document.getElementById('error-pass').style.display = 'block';
+        }
+    }
+
+    // LÓGICA DEL CHAT
     const chatWindow = document.getElementById('chat-window');
     const inputField = document.getElementById('query');
-    const sendBtn = document.getElementById('btn');
+    const sendBtn = document.getElementById('send-btn');
     const statusLabel = document.getElementById('status');
 
     function appendMsg(text, type) {
         const div = document.createElement('div');
         div.className = `msg ${type}`;
-        div.innerHTML = `<span class="author">${type === 'user' ? 'Tú' : 'Asistente'}</span>${text}`;
+        div.innerHTML = `<span class="author">${type === 'user' ? 'Tú' : 'Asistente Técnico'}</span>${text}`;
         chatWindow.appendChild(div);
         chatWindow.scrollTop = chatWindow.scrollHeight;
     }
-
-    // Mensaje de bienvenida inicial
-    appendMsg("Conexión lista con Gemini 2.5 Flash. ¿Qué necesitas consultar hoy?", "agent");
 
     async function handleChat() {
         const msg = inputField.value.trim();
@@ -121,7 +191,10 @@
         try {
             const response = await fetch(N8N_URL, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': AUTH_HEADER
+                },
                 body: JSON.stringify({ 
                     action: "sendMessage",
                     chatInput: msg,
@@ -129,26 +202,16 @@
                 })
             });
 
-            if (!response.ok) {
-                const errorData = await response.text();
-                throw new Error(errorData || 'Error en n8n');
-            }
+            if (!response.ok) throw new Error('Error en la pasarela de datos');
 
             const data = await response.json();
+            let reply = Array.isArray(data) ? data[0].output : (data.output || data.text);
             
-            // Extraer respuesta del array o del objeto
-            let reply = "";
-            if (Array.isArray(data)) {
-                reply = data[0].output || data[0].text || "Respuesta vacía";
-            } else {
-                reply = data.output || data.text || "Respuesta vacía";
-            }
-
-            appendMsg(reply, 'agent');
+            appendMsg(reply || "No he recibido datos del sensor.", 'agent');
 
         } catch (err) {
-            console.error("Detalle del error:", err);
-            appendMsg("Error 500: n8n ha fallado. Revisa que el flujo esté ACTIVO y que los nodos estén bien conectados.", 'agent');
+            console.error(err);
+            appendMsg("Error de conexión con el nodo central. Revisa el estado del túnel Ngrok.", 'agent');
         } finally {
             inputField.disabled = false;
             sendBtn.disabled = false;
