@@ -227,8 +227,9 @@
                 method: 'POST',
                 headers: { 
                     'Content-Type': 'application/json',
-                    // Enviamos la "llave" guardada tras el login visual
-                    'Authorization': 'Basic ' + userAuthToken
+                    'Authorization': 'Basic ' + userAuthToken,
+                    // ESTA LÍNEA ES CLAVE PARA NGROK:
+                    'ngrok-skip-browser-warning': 'true' 
                 },
                 body: JSON.stringify({ 
                     action: "sendMessage",
@@ -237,22 +238,24 @@
                 })
             });
 
-            // Si n8n rechaza la clave (Basic Auth incorrecto)
+            // Manejo de errores de autenticación o bloqueo
             if (response.status === 401) {
-                appendMsg("Error crítico: Credenciales incorrectas. Recarga la página.", 'agent');
-                userAuthToken = null; // Reset clave
+                appendMsg("Error 401: Usuario o contraseña de n8n incorrectos.", 'agent');
+                return;
+            }
+            if (response.status === 403) {
+                appendMsg("Error 403: El acceso está bloqueado por el servidor o ngrok.", 'agent');
                 return;
             }
 
             const data = await response.json();
-            // n8n puede devolver un array o un objeto directo
             let reply = Array.isArray(data) ? data[0].output : (data.output || data.text);
             
-            appendMsg(reply || "Lo siento, no he podido generar una respuesta.", 'agent');
+            appendMsg(reply || "El servidor no devolvió una respuesta válida.", 'agent');
 
         } catch (err) {
             console.error(err);
-            appendMsg("Error crítico de conexión. Verifica que el túnel esté ONLINE en la VM.", 'agent');
+            appendMsg("Error de red. Asegúrate de que n8n y ngrok estén funcionando correctamente.", 'agent');
         } finally {
             inputField.disabled = false;
             sendBtn.disabled = false;
