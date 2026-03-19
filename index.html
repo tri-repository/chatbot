@@ -228,15 +228,15 @@
                 headers: { 
                     'Content-Type': 'application/json',
                     'Authorization': 'Basic ' + userAuthToken,
-                    // ESTA LÍNEA ES CLAVE PARA NGROK:
-                    'ngrok-skip-browser-warning': 'true' 
+                    // ESTA LÍNEA MATA LA PANTALLA DE ADVERTENCIA
+                    'ngrok-skip-browser-warning': '69420' 
                 },
                 body: JSON.stringify({ 
-                    action: "sendMessage",
-                    chatInput: msg,
-                    sessionId: sessionId 
-                })
-            });
+                action: "sendMessage",
+                chatInput: msg,
+                sessionId: sessionId 
+            })
+        });
 
             // Manejo de errores de autenticación o bloqueo
             if (response.status === 401) {
