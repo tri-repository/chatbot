@@ -22,9 +22,7 @@
             overflow: hidden;
         }
 
-        /*=============================================
-        =            PANTALLA DE ACCESO               =
-        =============================================*/
+        /* --- PANTALLA DE ACCESO --- */
         #lock-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: linear-gradient(135deg, var(--primary-dark) 0%, var(--secondary) 100%);
@@ -39,14 +37,12 @@
             width: 100%; max-width: 380px; text-align: center;
         }
 
-        /* Imagen en el Login */
         .login-logo {
-            width: 200px; /* Más grande */
+            width: 200px;
             height: auto; 
-            margin-bottom: -15px; /* Más pegado al texto de abajo */
+            margin-bottom: -15px;
             display: block;
-            margin-left: auto;
-            margin-right: auto;
+            margin-left: auto; margin-right: auto;
         }
 
         .login-card h2 { color: var(--primary-dark); margin: 0 0 5px 0; }
@@ -70,12 +66,10 @@
 
         #login-error { color: #d32f2f; font-size: 0.8rem; margin-top: 10px; display: none; }
 
-        /*=============================================
-        =            INTERFAZ DEL CHAT                =
-        =============================================*/
+        /* --- INTERFAZ DEL CHAT --- */
         #main-container {
             display: flex; flex-direction: column; height: 100vh;
-            filter: blur(5px); /* Se verá borroso hasta el login */
+            filter: blur(5px);
             transition: 0.5s;
         }
 
@@ -86,17 +80,10 @@
             display: flex; align-items: center; justify-content: center;
         }
 
-        /* Imagen en la cabecera */
-        header img {
-            height: 80px; width: auto; margin-right: 15px; margin-bottom: -5px;
-        }
+        header img { height: 60px; width: auto; margin-right: 15px; }
 
-        header .header-titles {
-            display: flex; flex-direction: column; text-align: left;
-        }
-
-        header h2 { margin: 0; font-size: 1.3rem; }
-        header small { color: #666; font-size: 0.85rem; }
+        .header-titles h2 { margin: 0; font-size: 1.2rem; }
+        .header-titles small { color: #666; font-size: 0.8rem; }
 
         #chat-window {
             flex: 1; overflow-y: auto; padding: 20px;
@@ -118,8 +105,6 @@
         .input-box { max-width: 900px; width: 100%; display: flex; gap: 10px; }
 
         input#query { flex: 1; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 30px; outline: none; }
-        input#query:focus { border-color: var(--primary); }
-
         button#send-btn { background: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
         
         .typing { font-size: 0.8rem; color: #666; padding: 5px 20px; display: none; text-align: center; }
@@ -129,38 +114,32 @@
 
 <div id="lock-screen">
     <div class="login-card">
-        <img src="LOGOTRISIN.PNG" alt="Logo TRI JCYL" class="login-logo">
-        
+        <img src="LOGOTRISIN.PNG" alt="Logo TRI" class="login-logo">
         <h2>ChatBot TRI</h2>
-        <p>Acceso al Asistente de TRI</p>
-        
+        <p>Asistente de Gestión Rural</p>
         <div class="form-group">
             <label>Usuario</label>
-            <input type="text" id="user-input" class="login-input" autocomplete="username">
+            <input type="text" id="user-input" class="login-input">
         </div>
-        
         <div class="form-group">
             <label>Contraseña</label>
-            <input type="password" id="pass-input" class="login-input" autocomplete="current-password" onkeypress="if(event.key==='Enter') login()">
+            <input type="password" id="pass-input" class="login-input" onkeypress="if(event.key==='Enter') login()">
         </div>
-
         <button id="login-btn" onclick="login()">ENTRAR</button>
-        <div id="login-error">Credenciales necesarias para acceso.</div>
+        <div id="login-error">Credenciales requeridas.</div>
     </div>
 </div>
 
 <div id="main-container">
     <header>
-        <img src="LOGOTRISIN.PNG" alt="Logo TRI JCYL">
+        <img src="LOGOTRISIN.PNG" alt="Logo">
         <div class="header-titles">
-            <h2 style="margin:0;">TRI | <span style="color: var(--primary);">Territorio Rural Inteligente</span></h2>
+            <h2>TRI | <span style="color: var(--primary);">Territorio Rural</span></h2>
             <small>Asistente Virtual - JCYL</small>
         </div>
     </header>
-
     <div id="chat-window"></div>
-    <div id="status" class="typing">Estoy pensando...</div>
-
+    <div id="status" class="typing">Procesando consulta...</div>
     <div class="input-area">
         <div class="input-box">
             <input type="text" id="query" placeholder="Escribe tu consulta..." autocomplete="off">
@@ -178,23 +157,17 @@
     const inputField = document.getElementById('query');
     const sendBtn = document.getElementById('send-btn');
     const statusLabel = document.getElementById('status');
-    const lockScreen = document.getElementById('lock-screen');
-    const mainContainer = document.getElementById('main-container');
 
-    // Función de Login Visual
     function login() {
         const u = document.getElementById('user-input').value.trim();
         const p = document.getElementById('pass-input').value.trim();
-
         if (u && p) {
             userAuthToken = btoa(u + ":" + p);
-            
-            // Ocultar pantalla de bloqueo con animación
-            lockScreen.style.opacity = '0';
+            document.getElementById('lock-screen').style.opacity = '0';
             setTimeout(() => {
-                lockScreen.style.display = 'none';
-                mainContainer.style.filter = 'none';
-                appendMsg(`Hola, soy tu asistente de TRI. ¿En qué puedo ayudarte?`, "agent");
+                document.getElementById('lock-screen').style.display = 'none';
+                document.getElementById('main-container').style.filter = 'none';
+                appendMsg("¡Hola! Soy tu asistente de <strong>Territorio Rural Inteligente</strong>. ¿Qué necesitas consultar hoy?", "agent");
                 inputField.focus();
             }, 500);
         } else {
@@ -205,8 +178,6 @@
     function appendMsg(text, type) {
         const div = document.createElement('div');
         div.className = `msg ${type}`;
-        // n8n responde en JSON, pero Gemini responde en Markdown.
-        // n8n no lo renderiza por defecto, así que usamos innerHTML.
         div.innerHTML = `<span class="author">${type === 'user' ? 'Tú' : 'Asistente TRI'}</span>${text}`;
         chatWindow.appendChild(div);
         chatWindow.scrollTop = chatWindow.scrollHeight;
@@ -228,34 +199,20 @@
                 headers: { 
                     'Content-Type': 'application/json',
                     'Authorization': 'Basic ' + userAuthToken,
-                    // ESTA LÍNEA MATA LA PANTALLA DE ADVERTENCIA
-                    'ngrok-skip-browser-warning': '69420' 
+                    'ngrok-skip-browser-warning': 'true' 
                 },
-                body: JSON.stringify({ 
-                action: "sendMessage",
-                chatInput: msg,
-                sessionId: sessionId 
-            })
-        });
+                body: JSON.stringify({ action: "sendMessage", chatInput: msg, sessionId: sessionId })
+            });
 
-            // Manejo de errores de autenticación o bloqueo
-            if (response.status === 401) {
-                appendMsg("Error 401: Usuario o contraseña de n8n incorrectos.", 'agent');
-                return;
-            }
-            if (response.status === 403) {
-                appendMsg("Error 403: El acceso está bloqueado por el servidor o ngrok.", 'agent');
-                return;
-            }
+            if (!response.ok) throw new Error(`Error ${response.status}: Revisa CORS o credenciales.`);
 
             const data = await response.json();
             let reply = Array.isArray(data) ? data[0].output : (data.output || data.text);
-            
-            appendMsg(reply || "El servidor no devolvió una respuesta válida.", 'agent');
+            appendMsg(reply || "No he recibido respuesta del servidor.", 'agent');
 
         } catch (err) {
             console.error(err);
-            appendMsg("Error de red. Asegúrate de que n8n y ngrok estén funcionando correctamente.", 'agent');
+            appendMsg("Lo siento, hay un problema de conexión (CORS). Asegúrate de que n8n permita peticiones externas.", 'agent');
         } finally {
             inputField.disabled = false;
             sendBtn.disabled = false;
@@ -267,6 +224,5 @@
     sendBtn.addEventListener('click', handleChat);
     inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleChat(); });
 </script>
-
 </body>
 </html>
