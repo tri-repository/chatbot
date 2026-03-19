@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TRI | Territorio Rural Inteligente - JCYL</title>
-    
+    <title>TRI | ChatBot - JCYL</title>
     <link rel="icon" type="image/png" href="LOGOTRISIN.PNG">
-
     <style>
         :root {
             --primary: #2e7d32;
@@ -28,96 +26,69 @@
         /* --- PANTALLA DE ACCESO --- */
         #lock-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            /* Imagen de fondo del paisaje */
             background-image: url('fondopaisajeTRI.png');
             background-size: cover;
             background-position: center;
             background-repeat: no-repeat;
-            display: none; 
+            display: none;
             justify-content: center; align-items: center;
             z-index: 1000; transition: all 0.5s ease;
         }
-
-        /* Overlay semitransparente para mejorar la legibilidad */
         #lock-screen::before {
             content: '';
-            position: absolute;
-            inset: 0;
+            position: absolute; inset: 0;
             background: rgba(0, 0, 0, 0.35);
         }
-
         .login-card {
-            position: relative; /* Para que quede por encima del overlay */
+            position: relative;
             background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(6px);
             padding: 18px 24px 24px;
             border-radius: 12px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            width: 100%;
-            max-width: 300px; /* Más pequeño que los 380px originales */
-            text-align: center;
+            width: 100%; max-width: 300px; text-align: center;
         }
-
         .login-logo {
-            width: 150px; /* Reducido de 200px */
-            height: auto; 
+            width: 150px; height: auto;
             margin-bottom: -10px;
-            display: block;
-            margin-left: auto; margin-right: auto;
+            display: block; margin-left: auto; margin-right: auto;
         }
-
-        .login-card h2 {
-            color: var(--primary-dark);
-            margin: 0 0 3px 0;
-            font-size: 1.2rem; /* Ligeramente más pequeño */
-        }
-        .login-card p {
-            color: #666;
-            font-size: 0.82rem;
-            margin-bottom: 18px;
-        }
-
+        .login-card h2 { color: var(--primary-dark); margin: 0 0 3px 0; font-size: 1.2rem; }
+        .login-card p { color: #666; font-size: 0.82rem; margin-bottom: 18px; }
         .form-group { text-align: left; margin-bottom: 11px; }
-        .form-group label {
-            display: block;
-            font-size: 0.75rem;
-            font-weight: bold;
-            margin-bottom: 4px;
-            color: #444;
-        }
-        
-        .login-input {
-            width: 100%;
-            padding: 9px 10px;
-            border: 1px solid #ddd;
-            border-radius: 7px;
-            box-sizing: border-box;
-            font-size: 0.92rem;
-        }
-
-        #login-btn {
-            width: 100%;
-            background: var(--primary);
-            color: white;
-            border: none;
-            padding: 11px;
-            border-radius: 7px;
-            font-size: 0.95rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.3s;
-            margin-top: 8px;
-        }
+        .form-group label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; color: #444; }
+        .login-input { width: 100%; padding: 9px 10px; border: 1px solid #ddd; border-radius: 7px; box-sizing: border-box; font-size: 0.92rem; }
+        #login-btn { width: 100%; background: var(--primary); color: white; border: none; padding: 11px; border-radius: 7px; font-size: 0.95rem; font-weight: bold; cursor: pointer; transition: 0.3s; margin-top: 8px; }
         #login-btn:hover { background: var(--primary-dark); }
-
         #login-error { color: #d32f2f; font-size: 0.78rem; margin-top: 8px; display: none; }
 
         /* --- INTERFAZ DEL CHAT --- */
         #main-container {
-            display: none; 
+            display: none;
             flex-direction: column; height: 100vh;
             filter: blur(10px);
             transition: 0.5s;
+            position: relative;
+        }
+
+        /* Fondo difuminado fijo, solo decorativo */
+        #chat-bg-layer {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background-image: url('fondopaisajeTRI.png');
+            background-size: cover;
+            background-position: center;
+            filter: blur(5px) brightness(0.9);
+            transform: scale(1.06);
+            z-index: 0;
+            pointer-events: none;
+        }
+        #chat-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(244, 247, 244, 0.45);
+            z-index: 1;
+            pointer-events: none;
         }
 
         header {
@@ -125,93 +96,53 @@
             padding: 0.2rem; border-bottom: 2px solid var(--primary);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: flex; align-items: center; position: relative;
+            flex-shrink: 0;
+            z-index: 10;
         }
-
         header img { height: 100px; width: auto; margin-right: 15px; margin-left: auto; margin-bottom: -15px; }
-
         .header-titles { margin-right: auto; text-align: left; }
         .header-titles h2 { margin: 0; font-size: 1.2rem; }
         .header-titles small { color: #666; font-size: 0.8rem; }
+        .logout-btn { position: absolute; right: 15px; bottom: 22px; background: none; border: none; color: #999; font-size: 0.7rem; cursor: pointer; }
 
-        .logout-btn {
-            position: absolute; right: 15px; bottom: 22px;
-            background: none; border: none; color: #999;
-            font-size: 0.7rem; cursor: pointer;
-        }
-
-        /* Contenedor scroll SIN barra visible */
         #chat-bg {
             flex: 1;
-            position: relative;
             overflow-y: auto;
             overflow-x: hidden;
             display: flex;
             justify-content: center;
             align-items: flex-start;
+            position: relative;
+            z-index: 5;
             scrollbar-width: none;
             -ms-overflow-style: none;
         }
-
         #chat-bg::-webkit-scrollbar { display: none; }
-
-        /* Imagen de fondo fija — pegada al área de chat, no se mueve con el scroll */
-        #chat-bg-img {
-            position: sticky;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 0;          /* no ocupa espacio en el flujo */
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        #chat-bg-img::before {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-image: url('fondopaisajeTRI.png');
-            background-size: cover;
-            background-position: center;
-            filter: blur(5px) brightness(0.9);
-            transform: scale(1.06);
-            z-index: -1;        /* queda detrás de TODO lo demás */
-        }
-
-        #chat-bg-img::after {
-            content: '';
-            position: fixed;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(244, 247, 244, 0.45);
-            z-index: -1;
-        }
 
         #chat-window {
             padding: 20px;
             display: flex; flex-direction: column; gap: 15px;
             width: 100%; max-width: 900px;
-            position: relative;
-            z-index: 1;
             box-sizing: border-box;
-            min-height: 100%;
         }
 
-        .msg {
-            max-width: 80%; padding: 12px 18px; border-radius: 15px;
-            font-size: 0.95rem; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-        }
-
+        .msg { max-width: 80%; padding: 12px 18px; border-radius: 15px; font-size: 0.95rem; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
         .user { align-self: flex-end; background-color: var(--user-bubble); color: #1b5e20; border-bottom-right-radius: 2px; }
         .agent { align-self: flex-start; background-color: var(--agent-bubble); color: #333; border-bottom-left-radius: 2px; border: 1px solid #eee; }
-
         .author { font-weight: bold; font-size: 0.75rem; display: block; margin-bottom: 5px; text-transform: uppercase; color: #888; }
 
-        .input-area { background: white; padding: 20px; border-top: 1px solid #eee; display: flex; justify-content: center; }
+        .input-area {
+            background: white; padding: 20px; border-top: 1px solid #eee;
+            display: flex; justify-content: center;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 10;
+        }
         .input-box { max-width: 900px; width: 100%; display: flex; gap: 10px; }
-
         input#query { flex: 1; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 30px; outline: none; }
         button#send-btn { background: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
-        
-        .typing { font-size: 0.8rem; color: #666; padding: 5px 20px; display: none; text-align: center; }
+
+        .typing { font-size: 0.8rem; color: #666; padding: 5px 20px; display: none; text-align: center; position: relative; z-index: 10; }
     </style>
 </head>
 <body>
@@ -235,6 +166,8 @@
 </div>
 
 <div id="main-container">
+    <div id="chat-bg-layer"></div>
+    <div id="chat-overlay"></div>
     <header>
         <img src="LOGOTRISIN.PNG" alt="Logo">
         <div class="header-titles">
@@ -244,7 +177,6 @@
         <button class="logout-btn" onclick="logout()">Cerrar sesión</button>
     </header>
     <div id="chat-bg">
-        <div id="chat-bg-img"></div>
         <div id="chat-window"></div>
     </div>
     <div id="status" class="typing">Estoy pensando...</div>
@@ -283,7 +215,6 @@
                 inputField.focus();
             }, 500);
         }
-        
         if (chatWindow.children.length === 0) {
             appendMsg("¡Hola! Soy tu asistente de <strong>Territorio Rural Inteligente</strong>. ¿Qué necesitas consultar hoy?", "agent");
         }
@@ -318,39 +249,34 @@
 
     function appendMsg(text, type) {
         const div = document.createElement('div');
-        div.className = `msg ${type}`;
-        div.innerHTML = `<span class="author">${type === 'user' ? 'Tú' : 'Asistente TRI'}</span>${text}`;
+        div.className = 'msg ' + type;
+        div.innerHTML = '<span class="author">' + (type === 'user' ? 'Tú' : 'Asistente TRI') + '</span>' + text;
         chatWindow.appendChild(div);
         chatBg.scrollTop = chatBg.scrollHeight;
     }
 
     async function handleChat() {
         const msg = inputField.value.trim();
-        if(!msg) return;
-
+        if (!msg) return;
         appendMsg(msg, 'user');
         inputField.value = '';
         inputField.disabled = true;
         sendBtn.disabled = true;
         statusLabel.style.display = 'block';
-
         try {
             const response = await fetch(N8N_URL, {
                 method: 'POST',
-                headers: { 
+                headers: {
                     'Content-Type': 'application/json',
                     'Authorization': 'Basic ' + userAuthToken,
-                    'ngrok-skip-browser-warning': 'true' 
+                    'ngrok-skip-browser-warning': 'true'
                 },
                 body: JSON.stringify({ action: "sendMessage", chatInput: msg, sessionId: sessionId })
             });
-
-            if (!response.ok) throw new Error(`Error ${response.status}`);
-
+            if (!response.ok) throw new Error('Error ' + response.status);
             const data = await response.json();
             let reply = Array.isArray(data) ? data[0].output : (data.output || data.text || data.response);
             appendMsg(reply || "No he recibido respuesta.", 'agent');
-
         } catch (err) {
             appendMsg("Error de conexión con el asistente.", 'agent');
         } finally {
@@ -362,7 +288,7 @@
     }
 
     sendBtn.addEventListener('click', handleChat);
-    inputField.addEventListener('keypress', (e) => { if(e.key === 'Enter') handleChat(); });
+    inputField.addEventListener('keypress', (e) => { if (e.key === 'Enter') handleChat(); });
 </script>
 </body>
 </html>
