@@ -16,23 +16,33 @@
             --agent-bubble: #ffffff;
             --white: #ffffff;
         }
+
         body, html {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             margin: 0; padding: 0; height: 100%;
             background-color: var(--bg);
             overflow: hidden;
         }
+
+        /* VÍDEO DE FONDO */
+        #bg-video {
+            position: fixed;
+            top: 0; left: 0;
+            min-width: 100%; min-height: 100%;
+            width: auto; height: auto;
+            z-index: -1;
+            object-fit: cover;
+            filter: blur(8px) brightness(0.7); /* Desenfoque y oscurecido */
+            transform: scale(1.1); /* Evita bordes blancos por el blur */
+        }
+
         #lock-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('fondopaisajeTRI.png');
-            background-size: cover; background-position: center; background-repeat: no-repeat;
             display: none; justify-content: center; align-items: center;
             z-index: 1000; transition: all 0.5s ease;
+            background: rgba(0, 0, 0, 0.2); /* Capa extra sobre el video */
         }
-        #lock-screen::before {
-            content: ''; position: absolute; inset: 0;
-            background: rgba(0, 0, 0, 0.35);
-        }
+
         .login-card {
             position: relative;
             background: rgba(255, 255, 255, 0.95);
@@ -41,39 +51,31 @@
             box-shadow: 0 10px 30px rgba(0,0,0,0.3);
             width: 100%; max-width: 300px; text-align: center;
         }
+
         .login-logo { width: 150px; height: auto; margin-bottom: -10px; display: block; margin-left: auto; margin-right: auto; }
         .login-card h2 { color: var(--primary-dark); margin: 0 0 3px 0; font-size: 1.2rem; }
         .login-card p { color: #666; font-size: 0.82rem; margin-bottom: 18px; }
         .form-group { text-align: left; margin-bottom: 11px; }
         .form-group label { display: block; font-size: 0.75rem; font-weight: bold; margin-bottom: 4px; color: #444; }
         .login-input { width: 100%; padding: 9px 10px; border: 1px solid #ddd; border-radius: 7px; box-sizing: border-box; font-size: 0.92rem; }
+        
         #login-btn {
             width: 100%; background: var(--primary); color: white; border: none;
             padding: 11px; border-radius: 7px; font-size: 0.95rem; font-weight: bold;
             cursor: pointer; transition: 0.3s; margin-top: 8px;
         }
         #login-btn:hover { background: var(--primary-dark); }
-        #login-btn:disabled { background: #aaa; cursor: not-allowed; }
         #login-error { color: #d32f2f; font-size: 0.78rem; margin-top: 8px; display: none; }
 
         #main-container {
             display: none; flex-direction: column; height: 100vh;
-            filter: blur(10px); transition: 0.5s; position: relative;
+            transition: 0.5s; position: relative;
+            z-index: 1;
         }
-        #chat-bg-layer {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background-image: url('fondopaisajeTRI.png');
-            background-size: cover; background-position: center;
-            filter: blur(5px) brightness(0.9); transform: scale(1.06);
-            z-index: 0; pointer-events: none;
-        }
-        #chat-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(244, 247, 244, 0.45);
-            z-index: 1; pointer-events: none;
-        }
+
         header {
-            background: white; color: var(--primary-dark);
+            background: rgba(255, 255, 255, 0.9);
+            color: var(--primary-dark);
             padding: 0.2rem; border-bottom: 2px solid var(--primary);
             box-shadow: 0 2px 5px rgba(0,0,0,0.05);
             display: flex; align-items: center; position: relative;
@@ -84,33 +86,48 @@
         .header-titles h2 { margin: 0; font-size: 1.2rem; }
         .header-titles small { color: #666; font-size: 0.8rem; }
         .logout-btn { position: absolute; right: 15px; bottom: 32px; background: none; border: none; color: #999; font-size: 0.7rem; cursor: pointer; }
+
         #chat-bg {
             flex: 1; overflow-y: auto; overflow-x: hidden;
             display: flex; justify-content: center; align-items: flex-start;
             position: relative; z-index: 5;
-            scrollbar-width: none; -ms-overflow-style: none;
+            scrollbar-width: none;
         }
         #chat-bg::-webkit-scrollbar { display: none; }
+        
         #chat-window {
             padding: 20px; display: flex; flex-direction: column; gap: 15px;
             width: 100%; max-width: 900px; box-sizing: border-box;
         }
-        .msg { max-width: 80%; padding: 12px 18px; border-radius: 15px; font-size: 0.95rem; line-height: 1.4; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+
+        .msg { max-width: 80%; padding: 12px 18px; border-radius: 15px; font-size: 0.95rem; line-height: 1.5; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
         .user { align-self: flex-end; background-color: var(--user-bubble); color: #1b5e20; border-bottom-right-radius: 2px; }
         .agent { align-self: flex-start; background-color: var(--agent-bubble); color: #333; border-bottom-left-radius: 2px; border: 1px solid #eee; }
+        
+        /* Ajustes para el contenido Markdown de la IA */
+        .agent p { margin: 8px 0; }
+        .agent ul, .agent ol { padding-left: 20px; }
+        .agent table { border-collapse: collapse; width: 100%; margin: 10px 0; font-size: 0.85rem; }
+        .agent th, .agent td { border: 1px solid #ddd; padding: 8px; text-align: left; }
+        .agent th { background-color: #f2f2f2; }
+
         .author { font-weight: bold; font-size: 0.75rem; display: block; margin-bottom: 5px; text-transform: uppercase; color: #888; }
+        
         .input-area {
-            background: white; padding: 20px; border-top: 1px solid #eee;
-            display: flex; justify-content: center;
-            flex-shrink: 0; position: relative; z-index: 10;
+            background: rgba(255, 255, 255, 0.9); padding: 20px; border-top: 1px solid #eee;
+            display: flex; justify-content: center; z-index: 10;
         }
         .input-box { max-width: 900px; width: 100%; display: flex; gap: 10px; }
         input#query { flex: 1; padding: 12px 20px; border: 2px solid #e0e0e0; border-radius: 30px; outline: none; }
         button#send-btn { background: var(--primary); color: white; border: none; padding: 0 25px; border-radius: 30px; cursor: pointer; font-weight: bold; }
-        .typing { font-size: 0.8rem; color: #666; padding: 5px 20px; display: none; text-align: center; position: relative; z-index: 10; }
+        .typing { font-size: 0.8rem; color: #fff; text-shadow: 1px 1px 2px #000; padding: 5px 20px; display: none; text-align: center; }
     </style>
 </head>
 <body>
+
+<video autoplay muted loop playsinline id="bg-video">
+    <source src="fondotrivid.mp4" type="video/mp4">
+</video>
 
 <div id="lock-screen">
     <div class="login-card">
@@ -131,8 +148,6 @@
 </div>
 
 <div id="main-container">
-    <div id="chat-bg-layer"></div>
-    <div id="chat-overlay"></div>
     <header>
         <img src="LOGOTRISIN.PNG" alt="Logo">
         <div class="header-titles">
@@ -170,18 +185,16 @@
         if (instant) {
             lockScreen.style.display = 'none';
             mainContainer.style.display = 'flex';
-            mainContainer.style.filter = 'none';
         } else {
             lockScreen.style.opacity = '0';
             setTimeout(() => {
                 lockScreen.style.display = 'none';
                 mainContainer.style.display = 'flex';
-                mainContainer.style.filter = 'none';
                 inputField.focus();
             }, 500);
         }
         if (chatWindow.children.length === 0) {
-            appendMsg("¡Hola! Soy tu asistente de <strong>Territorio Rural Inteligente</strong>. ¿Qué necesitas consultar hoy?", "agent");
+            appendMsg("¡Hola! Soy tu asistente de **Territorio Rural Inteligente**. ¿Qué necesitas consultar hoy?", "agent");
         }
     }
 
@@ -189,18 +202,13 @@
         const u = document.getElementById('user-input').value.trim();
         const p = document.getElementById('pass-input').value.trim();
         const errorDiv = document.getElementById('login-error');
-        const btn = document.getElementById('login-btn');
-
         if (!u || !p) {
             errorDiv.textContent = 'Introduce usuario y contraseña.';
             errorDiv.style.display = 'block';
             return;
         }
-
         errorDiv.style.display = 'none';
-
         const token = btoa(u + ':' + p);
-
         try {
             const response = await fetch(N8N_URL, {
                 method: 'POST',
@@ -211,22 +219,17 @@
                 },
                 body: JSON.stringify({ action: "sendMessage", chatInput: "__auth_check__", sessionId: "auth_check" })
             });
-
             if (response.status === 401 || response.status === 403) {
                 errorDiv.textContent = 'Usuario o contraseña incorrectos.';
                 errorDiv.style.display = 'block';
             } else {
-                // n8n aceptó las credenciales
                 userAuthToken = token;
                 localStorage.setItem('tri_session_token', token);
                 showChatInterface();
             }
         } catch (err) {
-            errorDiv.textContent = 'Error de conexión. Inténtalo de nuevo.';
+            errorDiv.textContent = 'Error de conexión.';
             errorDiv.style.display = 'block';
-        } finally {
-            btn.textContent = 'ACCEDER';
-            btn.disabled = false;
         }
     }
 
@@ -246,16 +249,16 @@
     })();
 
     function appendMsg(text, type) {
-    const div = document.createElement('div');
-    div.className = 'msg ' + type;
+        const div = document.createElement('div');
+        div.className = 'msg ' + type;
+        
+        // Convertimos el Markdown a HTML real usando marked
+        const content = (type === 'agent') ? marked.parse(text) : text;
 
-    // Si es el agente, procesamos el texto con marked para que entienda el Markdown
-    const formattedText = (type === 'agent') ? marked.parse(text) : text;
-
-    div.innerHTML = '<span class="author">' + (type === 'user' ? 'Tú' : 'Asistente TRI') + '</span>' + formattedText;
-    chatWindow.appendChild(div);
-    chatBg.scrollTop = chatBg.scrollHeight;
-}
+        div.innerHTML = `<span class="author">${type === 'user' ? 'Tú' : 'Asistente TRI'}</span>${content}`;
+        chatWindow.appendChild(div);
+        chatBg.scrollTo({ top: chatBg.scrollHeight, behavior: 'smooth' });
+    }
 
     async function handleChat() {
         const msg = inputField.value.trim();
@@ -275,7 +278,6 @@
                 },
                 body: JSON.stringify({ action: "sendMessage", chatInput: msg, sessionId: sessionId })
             });
-            if (!response.ok) throw new Error('Error ' + response.status);
             const data = await response.json();
             let reply = Array.isArray(data) ? data[0].output : (data.output || data.text || data.response);
             appendMsg(reply || "No he recibido respuesta.", 'agent');
