@@ -330,13 +330,11 @@
 
             removeThinking();
 
-            if (response.status === 401) {
-                appendMsg("Sesión expirada. Por favor, vuelve a iniciar sesión.", 'agent');
-                setTimeout(() => logout(), 2000);
+            if (!response.ok) {
+                const errorText = await response.text();
+                appendMsg("Error " + response.status + ": " + errorText, 'agent');
                 return;
             }
-
-            if (!response.ok) throw new Error('Error ' + response.status);
 
             const data = await response.json();
             let reply = Array.isArray(data)
