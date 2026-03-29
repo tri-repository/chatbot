@@ -314,7 +314,8 @@
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
-                    'ngrok-skip-browser-warning': 'true'
+                    'ngrok-skip-browser-warning': 'true',
+                    'Authorization': 'Basic ' + btoa('tri:TRI_SECRET_2024')
                 },
                 body: JSON.stringify({
                     action: "sendMessage",
